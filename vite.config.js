@@ -19,7 +19,11 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
   },
-  // deck.gl and maplibre-gl need explicit pre-bundling
+  // deck.gl needs explicit pre-bundling (mixed ESM/CJS internals).
+  // react-map-gl is intentionally excluded: it has no root "." export,
+  // only subpath exports (./maplibre, ./mapbox) — Vite resolves those fine
+  // at import time without pre-bundling.
+  // The window.global polyfill for maplibre-gl is in index.html.
   optimizeDeps: {
     include: [
       'deck.gl',
@@ -27,15 +31,9 @@ export default defineConfig({
       '@deck.gl/layers',
       '@deck.gl/react',
       'maplibre-gl',
-      'react-map-gl',
     ],
-    esbuildOptions: {
-      // Needed by maplibre-gl in the browser
-      define: {
-        global: 'globalThis',
-      },
-    },
   },
 })
+
 
 
