@@ -12,11 +12,12 @@
 
 | File type | Where it goes | Root exceptions |
 |-----------|---------------|-----------------|
-| `.md` | `docs/` | `README.md`, `LICENSE`, `AGENTS.md` |
-| `.py` | `backend/` | None |
-| `.jsx` / `.js` | `src/` | None |
+| `.md` | `docs/` | `README.md`, `LICENSE`, `AGENTS.md`, `tools/README.md` |
+| `.py` | `backend/` or `tools/scripts/` | None |
+| `.jsx` / `.js` | `src/` | `vite.config.js` |
 | `.ino` / `.cpp` | `firmware/` | None |
 | Config (`.toml`, `.yaml`, `.ini`, `.sh`, `.cfg`, `.txt`) | Root | — |
+| Data (`.pdf`, `.csv`, `.json` source files) | `tools/data/` | — |
 | Tests (`.py`) | `tests/` | — |
 
 ## Import Convention
@@ -39,8 +40,13 @@ import CitizenMap from './pages/CitizenMap';
 | Directory | Purpose |
 |-----------|---------|
 | `src/` | React frontend (pages, components, assets, data) |
+| `src/config/` | App-level config files (e.g. `carto_style.json`) |
+| `src/hooks/` | Custom React hooks |
+| `src/utils/` | Pure utility functions |
 | `backend/` | Flask REST API, SQLite models, urgency engine, route optimizer |
 | `firmware/` | ESP32 Arduino/PlatformIO code |
+| `tools/scripts/` | One-off developer scripts (parse.py, parse.cjs) |
+| `tools/data/` | Raw source data files — **gitignored**, store locally only |
 | `tests/` | Pytest test suite |
 | `docs/` | All documentation (pitch, research, architecture) |
 | `.claude/skills/` | Reusable AI workflows |
@@ -48,8 +54,6 @@ import CitizenMap from './pages/CitizenMap';
 | `.windsurf/workflows/` | IDE-specific workflows |
 | `.github/workflows/` | CI/CD pipelines |
 | `.vscode/` | VS Code settings and extensions |
-| `tools/scripts/` | Helper scripts |
-| `tools/prompts/` | Reusable prompts |
 
 ## AI Agent Guardrails
 
