@@ -1,0 +1,6 @@
+{
+  "skills_path": ".claude/skills",
+  "hooks_path": ".claude/hooks",
+  "auto_run_hooks": false,
+  "project_context": "AGENTS.md"
+}
