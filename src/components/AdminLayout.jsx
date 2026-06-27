@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Server, Users, MapPin, Settings, LogOut, Trees, Map, LineChart } from 'lucide-react';
 import clsx from 'clsx';
-import treesData from '../data/trees.json';
+import { useGlobalState } from '../context/GlobalState';
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [trees, setTrees] = useState(treesData.slice(0, 300));
+  const { trees } = useGlobalState();
 
   const navItems = [
     { to: '/admin/overview', icon: LayoutDashboard, label: 'Overview' },
@@ -74,7 +73,7 @@ export default function AdminLayout() {
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto bg-gray-50/50 p-10">
         <div className="max-w-7xl mx-auto">
-          <Outlet context={{ trees, setTrees }} />
+          <Outlet context={{ trees }} />
         </div>
       </main>
 

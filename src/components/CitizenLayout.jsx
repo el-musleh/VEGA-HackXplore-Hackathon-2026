@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Map as MapIcon, Trophy, ScanLine, FileWarning, User, CheckCircle2, X } from 'lucide-react';
 import clsx from 'clsx';
-import treesData from '../data/trees.json';
+import { useGlobalState } from '../context/GlobalState';
 
 function CitizenBottomNav({ onScan }) {
   const navigate = useNavigate();
@@ -67,38 +67,34 @@ function CitizenBottomNav({ onScan }) {
 }
 
 export default function CitizenLayout() {
+  const { trees, ecoPoints, waterTree } = useGlobalState();
   const [isScanning, setIsScanning] = useState(false);
   const [scanSuccess, setScanSuccess] = useState(false);
-  const [ecoPoints, setEcoPoints] = useState(1250);
-  // Simulated User Location (Hohenwettersbach area where trees exist)
+  
+  // Simulated User Location
   const USER_LOC = [48.970698, 8.480784];
-
-  // Load all trees so the map shows everything
-  const [trees, setTrees] = useState(treesData);
 
   const handleScan = (treeId = null) => {
     setIsScanning(true);
     setTimeout(() => {
       setIsScanning(false);
       setScanSuccess(true);
-      setEcoPoints(prev => prev + 50);
       
       if (treeId) {
-        setTrees(trees.map(t => t.id === treeId ? { ...t, moisture: 100 } : t));
+        waterTree(treeId);
       } else {
         // Global scan button pressed, hydrate the driest tree as a mockup
         const driest = [...trees].sort((a,b) => a.moisture - b.moisture)[0];
-        setTrees(trees.map(t => t.id === driest.id ? { ...t, moisture: 100 } : t));
+        if (driest) waterTree(driest.id);
       }
     }, 2000);
   };
 
   const handleRemoteWater = (id) => {
-    // We can simulate the remote water via the map, but we'll pass this helper down
+    // Simulated short delay for animation
     setTimeout(() => {
-      setEcoPoints(prev => prev + 25);
-      setTrees(trees.map(t => t.id === id ? { ...t, moisture: 100 } : t));
-    }, 2500);
+      waterTree(id);
+    }, 800);
   };
 
   return (

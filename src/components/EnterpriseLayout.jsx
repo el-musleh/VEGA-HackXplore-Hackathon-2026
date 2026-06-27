@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Radio, MapPin, ScanLine, FileWarning } from 'lucide-react';
 import clsx from 'clsx';
-import treesData from '../data/trees.json';
+
+import { useGlobalState } from '../context/GlobalState';
 
 function EnterpriseBottomNav() {
   const navigate = useNavigate();
@@ -48,14 +48,12 @@ function EnterpriseBottomNav() {
 }
 
 export default function EnterpriseLayout() {
-  // Load full dataset for the government, but slice to 300 for map performance if needed
-  const [trees, setTrees] = useState(treesData.slice(0, 300));
-  
+  const { trees } = useGlobalState();
+
   return (
     <div className="flex flex-col h-full w-full bg-gray-bg relative overflow-hidden">
       <div className="flex-1 overflow-y-auto pb-[90px] bg-gray-bg">
-        {/* Pass down global enterprise state via Context */}
-        <Outlet context={{ trees, setTrees }} />
+        <Outlet context={{ trees }} />
       </div>
       
       <EnterpriseBottomNav />

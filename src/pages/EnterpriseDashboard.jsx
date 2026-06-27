@@ -1,20 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Truck, Droplet, Download, MapPin, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useGlobalState } from '../context/GlobalState';
 
 export default function EnterpriseDashboard() {
   const navigate = useNavigate();
-  const [routeStops, setRouteStops] = useState([]);
-  const [completedStops, setCompletedStops] = useState([]);
+  const { driverStops: routeStops, completedStops } = useGlobalState();
   const [isDownloaded, setIsDownloaded] = useState(false);
-
-  useEffect(() => {
-    const savedRoute = localStorage.getItem('activeDriverRoute');
-    if (savedRoute) setRouteStops(JSON.parse(savedRoute));
-
-    const savedCompleted = localStorage.getItem('driverCompletedStops');
-    if (savedCompleted) setCompletedStops(JSON.parse(savedCompleted));
-  }, []);
 
   const totalWaterNeeded = routeStops.length * 40; // Approx 40L per tree
   const tankCapacity = 2000;
