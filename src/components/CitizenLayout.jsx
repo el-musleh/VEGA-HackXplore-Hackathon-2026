@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Map as MapIcon, Trophy, ScanLine, Gift, User, CheckCircle2, X } from 'lucide-react';
+import { Map as MapIcon, Trophy, ScanLine, FileWarning, User, CheckCircle2, X } from 'lucide-react';
 import clsx from 'clsx';
 import treesData from '../data/trees.json';
 
@@ -14,7 +14,7 @@ function CitizenBottomNav({ onScan }) {
   ];
 
   const tabsRight = [
-    { to: '/citizen/rewards', icon: Gift, label: 'Rewards' },
+    { to: '/citizen/report', icon: FileWarning, label: 'Report' },
     { to: '/citizen/profile', icon: User, label: 'Profile' },
   ];
 
@@ -70,9 +70,11 @@ export default function CitizenLayout() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanSuccess, setScanSuccess] = useState(false);
   const [ecoPoints, setEcoPoints] = useState(1250);
-  
-  // Load the first 300 trees to avoid map performance issues on mobile
-  const [trees, setTrees] = useState(treesData.slice(0, 300));
+  // Simulated User Location (Hohenwettersbach area where trees exist)
+  const USER_LOC = [48.970698, 8.480784];
+
+  // Load all trees so the map shows everything
+  const [trees, setTrees] = useState(treesData);
 
   const handleScan = (treeId = null) => {
     setIsScanning(true);

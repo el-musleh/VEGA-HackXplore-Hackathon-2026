@@ -1,115 +1,274 @@
-import { MapPin, Truck, CheckCircle2, Download, Navigation } from 'lucide-react';
-import { useOutletContext } from 'react-router-dom';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Navigation, Droplet, Battery, MapPin, CheckCircle, Droplets, Map as MapIcon, ChevronRight } from 'lucide-react';
+import DeckGL from '@deck.gl/react';
+import { PathLayer, ScatterplotLayer } from '@deck.gl/layers';
+import Map from 'react-map-gl/maplibre';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
-// Haversine distance
-function getDistance(lat1, lon1, lat2, lon2) {
-  const R = 6371; 
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) * Math.sin(dLon / 2) * Math.sin(dLon / 2); 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); 
-  return R * c;
-}
+const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
-// Nearest Neighbor Route Optimizer
-function optimizeRoute(treesList) {
-  if (treesList.length === 0) return [];
-  let unvisited = [...treesList];
-  let current = unvisited.shift();
-  let route = [current];
-
-  while (unvisited.length > 0) {
-    let nearestIdx = 0;
-    let minDistance = Infinity;
-    for (let i = 0; i < unvisited.length; i++) {
-      const dist = getDistance(current.pos[0], current.pos[1], unvisited[i].pos[0], unvisited[i].pos[1]);
-      if (dist < minDistance) {
-        minDistance = dist;
-        nearestIdx = i;
-      }
-    }
-    current = unvisited[nearestIdx];
-    route.push(current);
-    unvisited.splice(nearestIdx, 1);
-  }
-  return route;
-}
+const WATER_SOURCES = [
+  { pos: [49.0069, 8.4037] },
+  { pos: [49.01, 8.39] },
+  { pos: [49.005, 8.41] }
+];
 
 export default function EnterpriseRoutes() {
-  const { trees } = useOutletContext();
-  
-  const criticalTrees = trees.filter(t => t.moisture < 20).slice(0, 5); 
-  const manifestTrees = optimizeRoute(criticalTrees);
+  const [routeStops, setRouteStops] = useState([]);
+  const [completedStops, setCompletedStops] = useState([]);
+  const [selectedStop, setSelectedStop] = useState(null);
+  const [showHydrants, setShowHydrants] = useState(false);
+  const [viewState, setViewState] = useState({
+    longitude: 8.4037, latitude: 49.0069, zoom: 14, pitch: 45, bearing: 0
+  });
+
+  useEffect(() => {
+    const savedRoute = localStorage.getItem('activeDriverRoute');
+    if (savedRoute) {
+      const parsed = JSON.parse(savedRoute);
+      setRouteStops(parsed);
+      if (parsed.length > 0) {
+        setViewState(v => ({ ...v, longitude: parsed[0].pos[1], latitude: parsed[0].pos[0] }));
+      }
+    }
+    const savedCompleted = localStorage.getItem('driverCompletedStops');
+    if (savedCompleted) setCompletedStops(JSON.parse(savedCompleted));
+  }, []);
+
+  // Update local storage when completed stops change
+  useEffect(() => {
+    localStorage.setItem('driverCompletedStops', JSON.stringify(completedStops));
+  }, [completedStops]);
+
+  const activeStops = useMemo(() => {
+    return routeStops.filter(tree => !completedStops.includes(tree.id));
+  }, [routeStops, completedStops]);
+
+  const handleStopSelect = (tree) => {
+    setSelectedStop(tree);
+    setViewState({
+      longitude: tree.pos[1],
+      latitude: tree.pos[0],
+      zoom: 18, // Zoom in extremely close for "Proximity Ping"
+      pitch: 60,
+      bearing: 0,
+      transitionDuration: 1000 // Smooth cinematic fly-to
+    });
+  };
+
+  const verifySensor = () => {
+    if (!selectedStop) return;
+    
+    // Simulate IoT Sync Delay
+    setTimeout(() => {
+      setCompletedStops(prev => [...prev, selectedStop.id]);
+      setSelectedStop(null);
+      
+      // Zoom back out to route overview
+      if (activeStops.length > 1) {
+        const nextStop = activeStops.find(t => t.id !== selectedStop.id);
+        if (nextStop) {
+          setViewState({
+            longitude: nextStop.pos[1],
+            latitude: nextStop.pos[0],
+            zoom: 15,
+            pitch: 45,
+            bearing: 0,
+            transitionDuration: 1000
+          });
+        }
+      }
+    }, 800);
+  };
+
+  // Generate Google Maps URL for the remaining route
+  const getGoogleMapsUrl = () => {
+    if (activeStops.length === 0) return '#';
+    // Add 'Current+Location' as the origin so Google Maps navigates from the driver's GPS
+    const coords = activeStops.map(t => `${t.pos[0]},${t.pos[1]}`).join('/');
+    return `https://www.google.com/maps/dir/Current+Location/${coords}`;
+  };
+
+  const layers = [
+    new PathLayer({
+      id: 'route-path',
+      data: [{
+        path: activeStops.map(t => [t.pos[1], t.pos[0]]),
+        color: [34, 197, 94] // earthy-green
+      }],
+      getPath: d => d.path,
+      getColor: d => d.color,
+      getWidth: 6,
+      widthMinPixels: 4,
+    }),
+    new ScatterplotLayer({
+      id: 'route-stops',
+      data: activeStops,
+      getPosition: d => [d.pos[1], d.pos[0]],
+      getFillColor: d => selectedStop && d.id === selectedStop.id ? [59, 130, 246] : [255, 255, 255],
+      getRadius: d => selectedStop && d.id === selectedStop.id ? 20 : 15,
+      radiusMinPixels: 6,
+      lineWidthMinPixels: 3,
+      getLineColor: [0, 0, 0],
+      pickable: true,
+      onClick: ({object}) => object && handleStopSelect(object)
+    }),
+    ...(showHydrants ? [
+      new ScatterplotLayer({
+        id: 'water-sources',
+        data: WATER_SOURCES,
+        getPosition: d => [d.pos[1], d.pos[0]],
+        getFillColor: [59, 130, 246, 200], // Blue
+        getRadius: 25,
+        radiusMinPixels: 8,
+      })
+    ] : [])
+  ];
+
+  const onMapLoad = useCallback((e) => {
+    const map = e.target;
+    if (!map.getLayer('3d-buildings')) {
+      map.addLayer({
+        'id': '3d-buildings',
+        'source': 'carto',
+        'source-layer': 'building',
+        'type': 'fill-extrusion',
+        'minzoom': 15,
+        'paint': {
+          'fill-extrusion-color': '#e5e7eb',
+          'fill-extrusion-height': ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
+          'fill-extrusion-opacity': 0.6
+        }
+      });
+    }
+  }, []);
 
   return (
-    <div className="min-h-full bg-gray-bg p-6 text-gray-800 pb-24">
-      <div className="mb-6 mt-4">
-        <p className="text-water-drop-blue font-bold text-xs tracking-widest uppercase mb-1">Routenplanung</p>
-        <h1 className="text-3xl font-black tracking-tight text-gray-900">Route Optimizer</h1>
-        <p className="text-gray-500 text-sm mt-2 leading-relaxed">
-          Daily watering manifest. Trees with healthy moisture levels or those recently watered by citizens are automatically excluded.
-        </p>
+    <div className="flex flex-col h-full bg-gray-bg relative">
+      
+      {/* Top Map Area */}
+      <div className="h-[45vh] relative shadow-lg z-10 rounded-b-3xl overflow-hidden bg-gray-200">
+        <DeckGL
+          viewState={viewState}
+          onViewStateChange={({viewState}) => setViewState(viewState)}
+          controller={true}
+          layers={layers}
+        >
+          <Map mapLib={maplibregl} mapStyle={MAP_STYLE} onLoad={onMapLoad} />
+        </DeckGL>
+
+        {/* Map Controls */}
+        <div className="absolute top-4 right-4 flex flex-col space-y-2">
+          <button 
+            onClick={() => setShowHydrants(!showHydrants)}
+            className={`p-3 rounded-xl shadow-lg border transition-all ${showHydrants ? 'bg-blue-500 text-white border-blue-600' : 'bg-white text-blue-500 border-gray-100'}`}
+          >
+            <Droplets size={20} />
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white border-2 border-gray-100 rounded-3xl p-5 shadow-sm mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <Truck className="text-gray-900 mr-2" size={20} />
-            <h2 className="font-bold text-gray-900">Truck #4 - Downtown</h2>
-          </div>
-          <span className="bg-earthy-green/10 text-earthy-green font-black text-xs px-2 py-1 rounded-lg">
-            Optimized
-          </span>
-        </div>
+      {/* Bottom Panel */}
+      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-6 relative z-20 -mt-4 bg-gray-bg">
         
-        <div className="space-y-4">
-          {manifestTrees.map((tree, idx) => (
-            <div key={tree.id} className="flex items-start">
-              <div className="flex flex-col items-center mr-3">
-                <div className="w-6 h-6 rounded-full bg-gray-100 text-gray-500 font-bold text-xs flex items-center justify-center">
-                  {idx + 1}
-                </div>
-                {idx !== manifestTrees.length - 1 && (
-                  <div className="w-0.5 h-10 bg-gray-100 mt-1" />
-                )}
+        {selectedStop ? (
+          /* Task Card View */
+          <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 animate-in slide-in-from-bottom-4">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Current Stop</p>
+                <h2 className="text-2xl font-black text-gray-900">{selectedStop.name}</h2>
+                <p className="text-sm text-gray-500 font-medium">#{selectedStop.id} • {selectedStop.stadtteil}</p>
               </div>
-              <div className="flex-1 pb-1">
-                <h3 className="font-bold text-sm text-gray-900">{tree.name} <span className="text-xs font-normal text-gray-400">#{tree.id}</span></h3>
-                <p className="text-xs text-gray-500 mb-1">{tree.stadtteil}</p>
-                <div className="flex items-center text-[10px] text-gray-400 mb-2 font-medium bg-gray-50 inline-flex px-2 py-1 rounded-md">
-                  <Navigation size={10} className="mr-1 text-earthy-green" />
-                  {tree.pos[0].toFixed(5)}, {tree.pos[1].toFixed(5)}
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-md">
-                    {tree.moisture}% Moisture
-                  </span>
-                  <span className="text-[10px] font-bold text-water-drop-blue bg-blue-50 px-2 py-0.5 rounded-md">
-                    Needs 40L
-                  </span>
+              <button 
+                onClick={() => setSelectedStop(null)}
+                className="bg-gray-100 p-2 rounded-full text-gray-400 hover:text-gray-900"
+              >
+                <ChevronRight size={20} className="rotate-180" />
+              </button>
+            </div>
+
+            <div className="bg-blue-50 rounded-2xl p-4 mb-4 flex items-center justify-between border border-blue-100">
+              <div className="flex items-center text-blue-700">
+                <Droplet size={24} className="mr-3" />
+                <div>
+                  <p className="font-black text-lg">Dispense 40 Gallons</p>
+                  <p className="text-xs font-bold uppercase tracking-wider">Watering Task</p>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+
+            {selectedStop.id % 5 === 0 && (
+              <div className="bg-orange-50 rounded-2xl p-4 mb-6 flex items-center justify-between border border-orange-100">
+                <div className="flex items-center text-orange-700">
+                  <Battery size={24} className="mr-3" />
+                  <div>
+                    <p className="font-black text-lg">Replace 9V Battery</p>
+                    <p className="text-xs font-bold uppercase tracking-wider">Hardware Task</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <button 
+              onClick={verifySensor}
+              className="w-full bg-earthy-green hover:bg-green-600 text-white font-black py-4 rounded-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-colors flex items-center justify-center active:scale-95"
+            >
+              <CheckCircle size={20} className="mr-2" />
+              Verify Sensor & Complete Task
+            </button>
+            <p className="text-center text-[10px] text-gray-400 font-bold mt-3 uppercase tracking-widest">
+              Forces local IoT node to ping the network
+            </p>
+          </div>
+        ) : (
+          /* Route List View */
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-black text-gray-900">Route Manifest</h2>
+              <a 
+                href={getGoogleMapsUrl()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gray-900 text-white text-xs font-bold px-4 py-2 rounded-xl flex items-center shadow-lg active:scale-95"
+              >
+                <Navigation size={14} className="mr-2" /> Navigate
+              </a>
+            </div>
+
+            {activeStops.length === 0 ? (
+              <div className="bg-white rounded-3xl p-8 text-center shadow-sm border border-gray-100">
+                <CheckCircle size={48} className="text-earthy-green mx-auto mb-4" />
+                <h3 className="font-black text-xl text-gray-900">Shift Complete</h3>
+                <p className="text-gray-500 text-sm mt-2 font-medium">All tasks verified and synced.</p>
+              </div>
+            ) : (
+              <div className="space-y-3 pb-8">
+                {activeStops.map((stop, idx) => (
+                  <div 
+                    key={stop.id}
+                    onClick={() => handleStopSelect(stop)}
+                    className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:scale-[0.98] transition-transform cursor-pointer"
+                  >
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-black text-gray-600 text-sm mr-4 shrink-0">
+                        {idx + 1}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-gray-900 text-sm leading-tight">{stop.name}</h3>
+                        <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">{stop.stadtteil}</p>
+                      </div>
+                    </div>
+                    <ChevronRight size={20} className="text-gray-300" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
       </div>
-
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white border-2 border-gray-100 rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-black text-gray-900">42</p>
-          <p className="text-xs text-gray-500 font-medium">Stops Avoided</p>
-        </div>
-        <div className="bg-white border-2 border-gray-100 rounded-2xl p-4 shadow-sm text-center">
-          <p className="text-2xl font-black text-gray-900">18km</p>
-          <p className="text-xs text-gray-500 font-medium">Fuel Saved</p>
-        </div>
-      </div>
-
-      <button className="w-full bg-gray-900 text-white py-4 rounded-2xl font-black flex items-center justify-center shadow-lg active:scale-95 transition-transform">
-        <Download className="mr-2" size={20} />
-        Export Route to Driver Tablet
-      </button>
-
     </div>
   );
 }

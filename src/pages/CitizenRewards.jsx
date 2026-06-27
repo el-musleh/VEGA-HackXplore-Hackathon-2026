@@ -9,11 +9,12 @@ const rewards = [
 ];
 
 export default function CitizenRewards() {
-  const { ecoPoints } = useOutletContext();
+  const { ecoPoints, setEcoPoints } = useOutletContext();
 
   const handleRedeem = (points) => {
     if (ecoPoints >= points) {
       alert("Reward Redeemed! You will receive an email with your QR coupon.");
+      setEcoPoints(prev => prev - points);
     } else {
       alert("Not enough Eco-Points!");
     }

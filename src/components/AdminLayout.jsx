@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Radio, Flame, LineChart, MapPin, Settings, LogOut, Trees } from 'lucide-react';
+import { LayoutDashboard, Server, Users, MapPin, Settings, LogOut, Trees, Map, LineChart } from 'lucide-react';
 import clsx from 'clsx';
 import treesData from '../data/trees.json';
 
@@ -10,10 +10,12 @@ export default function AdminLayout() {
   const [trees, setTrees] = useState(treesData.slice(0, 300));
 
   const navItems = [
-    { to: '/admin/overview', icon: LayoutDashboard, label: 'Baumkataster' },
-    { to: '/admin/routes', icon: MapPin, label: 'Routenplanung' },
-    { to: '/admin/fleet', icon: Radio, label: 'Sensor Fleet' },
-    { to: '/admin/alerts', icon: Flame, label: 'Alerts & Engagement' },
+    { to: '/admin/overview', icon: LayoutDashboard, label: 'Overview' },
+    { to: '/admin/map', icon: Map, label: 'Live Map' },
+    { to: '/admin/routes', icon: MapPin, label: 'Fleet & Dispatch' },
+    { to: '/admin/hardware', icon: Server, label: 'IoT Hardware' },
+    { to: '/admin/community', icon: Users, label: 'Community Hub' },
+    { to: '/admin/analytics', icon: LineChart, label: 'Analytics' },
   ];
 
   return (

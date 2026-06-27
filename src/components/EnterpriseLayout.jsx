@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Radio, Flame, LineChart, MapPin } from 'lucide-react';
+import { LayoutDashboard, Radio, MapPin, ScanLine, FileWarning } from 'lucide-react';
 import clsx from 'clsx';
 import treesData from '../data/trees.json';
 
@@ -9,10 +9,10 @@ function EnterpriseBottomNav() {
   const location = useLocation();
 
   const tabs = [
-    { to: '/enterprise/overview', icon: LayoutDashboard, label: 'Overview' },
-    { to: '/enterprise/routes', icon: MapPin, label: 'Routes' },
-    { to: '/enterprise/fleet', icon: Radio, label: 'Sensors' },
-    { to: '/enterprise/alerts', icon: Flame, label: 'Alerts' },
+    { to: '/enterprise/overview', icon: LayoutDashboard, label: 'Shift' },
+    { to: '/enterprise/routes', icon: MapPin, label: 'Map' },
+    { to: '/enterprise/scanner', icon: ScanLine, label: 'Scan' },
+    { to: '/enterprise/report', icon: FileWarning, label: 'Report' },
   ];
 
   const renderTab = (tab) => {
