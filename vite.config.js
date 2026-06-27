@@ -19,5 +19,23 @@ export default defineConfig({
     outDir: 'dist',
     sourcemap: false,
   },
+  // deck.gl and maplibre-gl need explicit pre-bundling
+  optimizeDeps: {
+    include: [
+      'deck.gl',
+      '@deck.gl/core',
+      '@deck.gl/layers',
+      '@deck.gl/react',
+      'maplibre-gl',
+      'react-map-gl',
+    ],
+    esbuildOptions: {
+      // Needed by maplibre-gl in the browser
+      define: {
+        global: 'globalThis',
+      },
+    },
+  },
 })
+
 
