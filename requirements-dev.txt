@@ -1,0 +1,12 @@
+# Development dependencies
+pre-commit>=4.6.0
+ruff>=0.15.19
+mypy>=2.1.0
+pytest>=9.0.3
+bandit>=1.7.0
+pip-audit>=2.10.1
+# Pin transitive deps with known CVEs
+msgpack>=1.2.1
+filelock>=3.20.3
+requests>=2.33.0
+urllib3>=2.7.0

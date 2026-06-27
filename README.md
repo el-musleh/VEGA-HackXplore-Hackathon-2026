@@ -1,16 +1,41 @@
-# React + Vite
+# Vegas La Vega
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+IoTrees — Smart Watering for Urban Trees. Ground-truth sensors, citizen gamification, and a city routing engine for Karlsruhe's urban canopy.
 
-Currently, two official plugins are available:
+## Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Frontend (React + Vite):**
 
-## React Compiler
+```bash
+./start.sh           # auto-setup + start the dev server
+./start.sh build     # build for production
+./start.sh preview   # preview the production build
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Backend (Flask — optional):**
 
-## Expanding the Oxlint configuration
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r ../requirements.txt
+flask --app main run
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Project Structure
+
+- `src/` — React 19 + Vite 8 frontend (Citizen, Enterprise, Admin, Homeowner flows)
+- `backend/` — Flask REST API + SQLite (telemetry, trees, routing)
+- `firmware/` — ESP32 Arduino/PlatformIO code
+- `docs/` — Pitch deck, research, system architecture
+- `tests/` — Test suite
+
+See [AGENTS.md](AGENTS.md) for the full structure guide and AI agent instructions.
+
+## Security
+
+See [docs/SECURITY.md](docs/SECURITY.md) for the security policy.
+
+## Documentation
+
+- [System Architecture](docs/system-architecture.md)
+- [Pitch Deck](docs/pitch/deck.md)

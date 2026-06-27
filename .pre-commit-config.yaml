@@ -1,0 +1,38 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        args: ["--ignore-missing-imports"]
+
+  - repo: local
+    hooks:
+      - id: structure-check
+        name: Project structure check
+        entry: python3 .claude/hooks/pre-commit-check.py
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: bandit
+        name: Bandit security lint
+        entry: bandit
+        language: system
+        types: [python]
+        args: ["-r", "backend/"]
+        pass_filenames: false
+
+      - id: pip-audit
+        name: pip-audit dependency scan
+        entry: pip-audit
+        language: system
+        pass_filenames: false
+        always_run: true
+        args: ["--requirement", "requirements.txt", "--requirement", "requirements-dev.txt"]
