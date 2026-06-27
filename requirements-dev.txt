@@ -8,5 +8,5 @@ pip-audit>=2.10.1
 # Pin transitive deps with known CVEs
 msgpack>=1.2.1
 filelock>=3.20.3
-requests>=2.33.0
+requests>=2.34.2
 urllib3>=2.7.0
