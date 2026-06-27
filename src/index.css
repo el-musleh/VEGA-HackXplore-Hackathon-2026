@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-earthy-green: #4CAF50;
+  --color-earthy-green-light: #81C784;
+  --color-water-drop-blue: #03A9F4;
+  --color-water-drop-blue-dark: #0288D1;
+  --color-warning-amber: #FFB300;
+  --color-warning-red: #E53935;
+  --color-white-bg: #FFFFFF;
+  --color-gray-bg: #F5F7FA;
+  
+  --animate-fade-in-down: fade-in-down 0.3s ease-out forwards;
+  
+  @keyframes fade-in-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scan {
+    0%, 100% { top: 0; }
+    50% { top: calc(100% - 4px); }
+  }
+}
+
+body {
+  background-color: var(--color-gray-bg);
+  font-family: 'Inter', system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar to mimic mobile no-scrollbar feel */
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* Leaflet map sizing constraint */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+}
