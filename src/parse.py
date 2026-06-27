@@ -4,7 +4,10 @@ import re
 import os
 import random
 
-with open('karlsruhe.pdf', 'rb') as f:
+# Resolve paths relative to this script's location (src/)
+_DIR = os.path.dirname(os.path.abspath(__file__))
+
+with open(os.path.join(_DIR, 'karlsruhe.pdf'), 'rb') as f:
     reader = PyPDF2.PdfReader(f)
     text = ''
     for page in reader.pages:
@@ -45,8 +48,8 @@ if end != -1:
         }
         features.append(f)
 
-    os.makedirs('src/data', exist_ok=True)
-    with open('src/data/trees.json', 'w', encoding='utf-8') as out:
+    os.makedirs(os.path.join(_DIR, 'data'), exist_ok=True)
+    with open(os.path.join(_DIR, 'data', 'trees.json'), 'w', encoding='utf-8') as out:
         json.dump(features, out, indent=2)
         
     print(f"Successfully processed {len(features)} trees using Regex.")

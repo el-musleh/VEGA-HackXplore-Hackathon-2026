@@ -1,7 +1,7 @@
 const fs = require('fs');
 const pdf = require('pdf-parse');
 
-let dataBuffer = fs.readFileSync('karlsruhe.pdf');
+let dataBuffer = fs.readFileSync(require('path').join(__dirname, 'karlsruhe.pdf'));
 
 pdf(dataBuffer).then(function(data) {
   let text = data.text.replace(/\n/g, '').trim();
@@ -17,7 +17,7 @@ pdf(dataBuffer).then(function(data) {
   
   try {
     const parsed = JSON.parse(text);
-    fs.mkdirSync('src/data', { recursive: true });
+    fs.mkdirSync(require('path').join(__dirname, 'data'), { recursive: true });
     
     // Add mock fields to each tree since the original data is just species/location
     const enrichedFeatures = parsed.features.map((f, i) => {
@@ -36,7 +36,7 @@ pdf(dataBuffer).then(function(data) {
       };
     });
 
-    fs.writeFileSync('src/data/trees.json', JSON.stringify(enrichedFeatures, null, 2));
+    fs.writeFileSync(require('path').join(__dirname, 'data/trees.json'), JSON.stringify(enrichedFeatures, null, 2));
     console.log('Successfully parsed and saved ' + enrichedFeatures.length + ' trees.');
   } catch(e) {
     console.error('JSON Parse error:', e.message);
