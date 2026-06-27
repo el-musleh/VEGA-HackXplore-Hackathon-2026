@@ -1,7 +1,19 @@
+/**
+ * Parse Karlsruhe urban tree data from PDF and generate src/data/trees.json.
+ *
+ * Run from the project root:
+ *   node tools/scripts/parse.cjs
+ */
+
 const fs = require('fs');
+const path = require('path');
 const pdf = require('pdf-parse');
 
-let dataBuffer = fs.readFileSync(require('path').join(__dirname, 'karlsruhe.pdf'));
+const projectRoot = path.resolve(__dirname, '..', '..');
+const pdfPath = path.join(projectRoot, 'tools', 'data', 'karlsruhe.pdf');
+const outPath = path.join(projectRoot, 'src', 'data', 'trees.json');
+
+let dataBuffer = fs.readFileSync(pdfPath);
 
 pdf(dataBuffer).then(function(data) {
   let text = data.text.replace(/\n/g, '').trim();
@@ -14,11 +26,11 @@ pdf(dataBuffer).then(function(data) {
   if (end !== -1) {
     text = text.substring(0, end + 1);
   }
-  
+
   try {
     const parsed = JSON.parse(text);
-    fs.mkdirSync(require('path').join(__dirname, 'data'), { recursive: true });
-    
+    fs.mkdirSync(path.dirname(outPath), { recursive: true });
+
     // Add mock fields to each tree since the original data is just species/location
     const enrichedFeatures = parsed.features.map((f, i) => {
       const moisture = Math.floor(Math.random() * 100);
@@ -36,9 +48,11 @@ pdf(dataBuffer).then(function(data) {
       };
     });
 
-    fs.writeFileSync(require('path').join(__dirname, 'data/trees.json'), JSON.stringify(enrichedFeatures, null, 2));
-    console.log('Successfully parsed and saved ' + enrichedFeatures.length + ' trees.');
+    fs.writeFileSync(outPath, JSON.stringify(enrichedFeatures, null, 2));
+    console.log(`Successfully parsed and saved ${enrichedFeatures.length} trees.`);
+    console.log(`Output written to: ${outPath}`);
   } catch(e) {
     console.error('JSON Parse error:', e.message);
   }
 });
+

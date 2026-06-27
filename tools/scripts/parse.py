@@ -1,13 +1,21 @@
+"""Parse Karlsruhe urban tree data from PDF and generate src/data/trees.json.
+
+Run from the project root:
+    python tools/scripts/parse.py
+"""
+
 import PyPDF2
 import json
 import re
 import os
 import random
 
-# Resolve paths relative to this script's location (src/)
-_DIR = os.path.dirname(os.path.abspath(__file__))
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.join(_script_dir, '..', '..')
+_pdf_path = os.path.join(_project_root, 'tools', 'data', 'karlsruhe.pdf')
+_out_path = os.path.join(_project_root, 'src', 'data', 'trees.json')
 
-with open(os.path.join(_DIR, 'karlsruhe.pdf'), 'rb') as f:
+with open(_pdf_path, 'rb') as f:
     reader = PyPDF2.PdfReader(f)
     text = ''
     for page in reader.pages:
@@ -48,8 +56,9 @@ if end != -1:
         }
         features.append(f)
 
-    os.makedirs(os.path.join(_DIR, 'data'), exist_ok=True)
-    with open(os.path.join(_DIR, 'data', 'trees.json'), 'w', encoding='utf-8') as out:
+    os.makedirs(os.path.dirname(_out_path), exist_ok=True)
+    with open(_out_path, 'w', encoding='utf-8') as out:
         json.dump(features, out, indent=2)
-        
+
     print(f"Successfully processed {len(features)} trees using Regex.")
+    print(f"Output written to: {_out_path}")
