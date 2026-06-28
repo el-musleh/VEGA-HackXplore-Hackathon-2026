@@ -1,11 +1,40 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Droplet, Map, Sprout, Briefcase } from 'lucide-react';
+import { useGlobalState } from '../context/GlobalState';
+import { Droplet, Map, Sprout, Briefcase, RotateCcw, CheckCircle } from 'lucide-react';
 
 export default function Gateway() {
   const navigate = useNavigate();
+  const { resetDemo } = useGlobalState();
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  const handleReset = () => {
+    resetDemo();
+    setResetSuccess(true);
+    setTimeout(() => setResetSuccess(false), 2000);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center p-6 bg-gray-50">
+    <div className="flex flex-col min-h-screen items-center justify-center p-6 bg-gray-50 relative">
+      
+      {/* Floating Reset Button */}
+      <div className="absolute top-6 right-6 flex items-center gap-3">
+        {resetSuccess && (
+          <div className="flex items-center gap-1.5 bg-green-50 border border-green-150 px-3.5 py-2 rounded-xl text-green-700 text-xs font-bold shadow-sm animate-in fade-in duration-300">
+            <CheckCircle size={14} />
+            Demo Reset!
+          </div>
+        )}
+        <button
+          onClick={handleReset}
+          className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-gray-50 text-gray-700 font-bold text-xs rounded-xl shadow-sm border border-gray-200 transition-all active:scale-95"
+          title="Reset all prototype states"
+        >
+          <RotateCcw size={14} className={resetSuccess ? 'animate-spin' : ''} />
+          Reset Demo Data
+        </button>
+      </div>
+
       {/* Logo Area */}
       <div className="flex flex-col items-center mb-16 animate-fade-in-down">
         <div className="w-32 h-32 bg-gradient-to-tr from-water-drop-blue to-earthy-green rounded-[40px] flex items-center justify-center mb-6 shadow-xl text-white transform rotate-3 hover:rotate-6 transition-transform cursor-default">

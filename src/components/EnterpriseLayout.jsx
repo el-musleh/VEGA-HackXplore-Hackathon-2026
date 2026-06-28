@@ -68,7 +68,7 @@ function EnterpriseBottomNav({ onScan }) {
 
 export default function EnterpriseLayout() {
   const navigate = useNavigate();
-  const { trees } = useGlobalState();
+  const { trees, updateTreeConfig } = useGlobalState();
   const [isScanning, setIsScanning] = useState(false);
   const [scanSuccess, setScanSuccess] = useState(false);
   const [pairingStep, setPairingStep] = useState('nfc'); // nfc, ble, sync
@@ -111,6 +111,7 @@ export default function EnterpriseLayout() {
   };
 
   const handleApplyConfig = () => {
+    updateTreeConfig(884, { hasAutoValve: smartValve, frequency, trimOffset: calibrationTrim });
     alert("Configuration applied and burned to node EEPROM successfully!");
     setScanSuccess(false);
   };

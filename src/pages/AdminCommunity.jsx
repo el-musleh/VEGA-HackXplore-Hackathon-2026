@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useGlobalState } from '../context/GlobalState';
 import { Trophy, AlertCircle, Megaphone, CheckCircle, Clock } from 'lucide-react';
 
 export default function AdminCommunity() {
+  const { tickets } = useGlobalState();
   const [pushTitle, setPushTitle] = useState("Heatwave Alert! 🌡️");
   const [pushBody, setPushBody] = useState("Temperatures are spiking this weekend. Trees in the Downtown sector need extra water!");
 
@@ -13,11 +15,15 @@ export default function AdminCommunity() {
     { rank: 5, name: "Julia B.", points: 760, liters: 210, badges: 3 }
   ];
 
-  const issueReports = [
-    { id: 1042, user: "Max W.", type: "Vandalism", desc: "Sensor casing broken on Oak tree #412.", status: "Pending", time: "2 hours ago" },
-    { id: 1043, user: "Anonymous", type: "Tree Health", desc: "Large branch snapped off Linden tree #882.", status: "In Progress", time: "5 hours ago" },
-    { id: 1044, user: "Sarah L.", type: "Water Source", desc: "Public tap near park entrance is leaking.", status: "Resolved", time: "1 day ago" }
-  ];
+  // Map global tickets to UI format dynamically
+  const issueReports = tickets.map(t => ({
+    id: t.id,
+    user: "Citizen Volunteer",
+    type: t.issue,
+    desc: `Problem reported on city canopy asset: ${t.treeName}. Requires municipal review.`,
+    status: t.status === "Open" ? "Pending" : "Resolved",
+    time: t.date
+  }));
 
   return (
     <div className="space-y-6 flex flex-col h-full">

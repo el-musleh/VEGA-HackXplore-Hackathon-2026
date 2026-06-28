@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
+import { useGlobalState } from '../context/GlobalState';
 import { Droplet, Wind, ShieldCheck, Sun, Star, TreePine, Thermometer, Camera, AlertTriangle, Sprout, Hammer, Trash, Send, CheckCircle, X } from 'lucide-react';
 
 export default function CitizenProfile() {
   const { ecoPoints } = useOutletContext();
+  const { addTicket } = useGlobalState();
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -21,6 +23,7 @@ export default function CitizenProfile() {
 
   const handleSubmit = () => {
     if (!selectedIssue) return;
+    addTicket("Linden (#884)", selectedIssue); // Dynamic global register
     setSubmitted(true);
     setTimeout(() => {
       setSubmitted(false);

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGlobalState } from '../context/GlobalState';
 import { PlusCircle, CheckCircle, MapPin, Loader2, Wifi, Layers, Settings, Activity, Smartphone, Bluetooth, RefreshCw } from 'lucide-react';
 
 export default function EnterpriseScanner() {
   const navigate = useNavigate();
+  const { updateTreeConfig } = useGlobalState();
   const [pairingState, setPairingState] = useState('idle'); // idle, nfc, ble, sync, paired
   const [treeName, setTreeName] = useState('Linden (Tilia)');
   const [lat, setLat] = useState('49.0069');
@@ -34,6 +36,7 @@ export default function EnterpriseScanner() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    updateTreeConfig(884, { pos: [parseFloat(lat), parseFloat(lon)], hasAutoValve: smartValve, battery: 100, deveui });
     setSubmitted(true);
   };
 
