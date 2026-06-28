@@ -3,7 +3,7 @@
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).with_name("iotrees.db")
+DB_PATH = Path(__file__).with_name("vegas_la_vega.db")
 
 
 def get_db() -> sqlite3.Connection:

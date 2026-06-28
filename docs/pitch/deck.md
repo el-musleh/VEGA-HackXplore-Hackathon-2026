@@ -3,17 +3,17 @@ marp: true
 theme: default
 paginate: true
 ---
-# IoTrees — Pitch Deck
+# Vegas La Vega — Pitch Deck
 ## Smart Watering for Urban Trees
 
 ---
 
 ### Slide 1: Title
-# IoTrees
-**The Internet of Trees**
-Giving every urban tree a voice — and every city the data to save it.
+# Vegas La Vega — The Urban Forestry Ecosystem
+**The B2G2C smart canopy platform**
+Leveraging ground-truth soil data to optimize city logistics and ignite targeted citizen engagement.
 
-Team: [Your Names]
+Team: Vegas La Vega (Khaled Salama, Mohammad El-Musleh, Ragini Mishra, Vamsi Tungala)
 Hackathon: VEGA Challenge — Karlsruhe
 
 ---
@@ -29,7 +29,7 @@ Hackathon: VEGA Challenge — Karlsruhe
 ---
 
 ### Slide 3: The Solution
-# One Platform: IoTrees
+# One Platform: Vegas La Vega
 **Ground-truth sensors + Citizen gamification + City routing engine**
 
 1. **Monitor:** ESP32 + capacitive soil sensors measure real root-zone moisture.
@@ -119,24 +119,24 @@ Edge (ESP32 Node)     ->    Hub (Wi-Fi / MQTT)    ->    Core (Cloud API + SQLite
 ### Slide 12: Pitch Summary
 > We aren't just saving water. We are protecting million-euro urban assets, cutting municipal budgets, and turning climate anxiety into community action.
 
-**IoTrees:** Ground-truth data for cities. Green rewards for citizens. A cooler Karlsruhe for everyone.
+**Vegas La Vega:** Ground-truth data for cities. Green rewards for citizens. A cooler Karlsruhe for everyone.
 
 ---
 
 ### Slide 13: Meet the Team
-- [Name] — Hardware / Embedded
-- [Name] — Backend / Data
-- [Name] — Frontend / UX
-- [Name] — Pitch / Business Model
+- Khaled Salama — Hardware / Embedded
+- Mohammad El-Musleh — Backend / Data
+- Ragini Mishra — Frontend / UX
+- Vamsi Tungala — Pitch / Business Model
 
-Contact: [email] | [GitHub]
+Contact: mohammadmusleh3@gmail.com | https://github.com/el-musleh/VEGA-HackXplore-Hackathon-2026
 
 ---
 
 ### Slide 14: Thank You / Q&A
 **Links:**
-- Live Demo: [URL]
-- GitHub: [URL]
+- Live Demo: http://localhost:5173
+- GitHub: https://github.com/el-musleh/VEGA-HackXplore-Hackathon-2026
 - One-Pager QR: [image]
 
 ---
@@ -147,7 +147,7 @@ Contact: [email] | [GitHub]
 "Last summer in Karlsruhe, a water truck drove to Kaiserstraße and dumped 200 liters on a tree that a neighbor had already watered that morning. Meanwhile, two streets over, a young linden hit permanent wilting point and died. The city has 88,000 trees. Zero ground-truth data."
 
 **0:45–1:45 | The Solution**
-"IoTrees gives every vulnerable tree a voice. A €15 ESP32 node with a capacitive soil sensor wakes once an hour, measures root-zone moisture, and transmits to the cloud. Citizens see a live fuel-gauge map. When they water a tree, the sensor verifies it — turning abstract volunteer effort into verified impact."
+"Vegas La Vega gives every vulnerable tree a voice. A €15 ESP32 node with a capacitive soil sensor wakes once an hour, measures root-zone moisture, and transmits to the cloud. Citizens see a live fuel-gauge map. When they water a tree, the sensor verifies it — turning abstract volunteer effort into verified impact."
 
 **1:45–2:30 | Technical Readiness**
 "Unlike Berlin's Gieß den Kiez — which relies on blind citizen clicks — our hardware delivers ground-truth validation. We combine live moisture with 48-hour weather forecasts so the app says: 'Rain is coming, hold off' or 'Heatwave incoming, pre-emptive strike now.' Deep sleep gives us 6-month battery life."

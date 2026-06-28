@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vegas-la-vega"
 version = "0.1.0"
-description = "IoTrees — Smart Watering for Urban Trees. Ground-truth sensors + citizen gamification + city routing engine."
+description = "Vegas La Vega — Smart Watering for Urban Trees. Ground-truth sensors + citizen gamification + city routing engine."
 requires-python = ">=3.11"
 readme = "README.md"
 license = {text = "MIT"}

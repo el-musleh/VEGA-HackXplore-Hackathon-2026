@@ -2,7 +2,7 @@
 
 ## Overview
 
-IoTrees — Smart Watering for Urban Trees. Ground-truth sensors, citizen gamification, and a city routing engine.
+Vegas La Vega — Smart Watering for Urban Trees. Ground-truth sensors, citizen gamification, and a city routing engine.
 
 ## Design Decisions
 

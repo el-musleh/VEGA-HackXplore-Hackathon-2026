@@ -1,4 +1,4 @@
-# justfile — Task runner for IoTrees (Vegas La Vega)
+# justfile — Task runner for Vegas La Vega
 # Install `just` from https://github.com/casey/just
 
 # Default recipe — show available commands

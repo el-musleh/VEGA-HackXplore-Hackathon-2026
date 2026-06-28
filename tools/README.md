@@ -1,6 +1,6 @@
 # tools/
 
-Developer utilities for the IoTrees project.
+Developer utilities for the Vegas La Vega project.
 
 ## scripts/
 

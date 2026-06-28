@@ -1,5 +1,5 @@
 /*
-  IoTrees ESP32 Node Firmware
+  Vegas La Vega ESP32 Node Firmware
   Hardware: ESP32 DevKit, Capacitive Soil Sensor v2.0, 4x AA / Li-Ion battery
   Wiring:  GPIO25 -> MOSFET gate (sensor power), GPIO34 -> A0, GPIO35 -> Vbat/2
 */
