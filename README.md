@@ -173,15 +173,15 @@ flowchart TD
     Frontend["React 19 Frontend (Vite)"]
     
     %% Flows
-    Edge -->|1. Deep Sleep Wake & Sample Medians| Edge
-    Edge -->|2. Transmit Telemetry (JSON POST)| Network
+    Edge -->|1. Deep Sleep Wake and Sample Medians| Edge
+    Edge -->|2. Transmit Telemetry JSON POST| Network
     Network -->|3. Route Payload| Backend
     Backend -->|4. Store Telemetry Rows| DB
     Backend -->|5. Recalculate Urgency Status| Backend
     Backend <-->|6. Fetch weather forecast| Weather
     
-    Frontend <-->|7. GET /api/trees & /api/route| Backend
-    Frontend -->|8. POST /api/trees/:id/water (Citizen watering)| Backend
+    Frontend <-->|7. GET trees and routes| Backend
+    Frontend -->|8. POST citizen watering event| Backend
 ```
 
 ---
