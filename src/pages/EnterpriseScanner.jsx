@@ -1,158 +1,339 @@
 import { useState } from 'react';
-import { ScanLine, CheckCircle, Clock, Server, RefreshCw, SmartphoneNfc } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useGlobalState } from '../context/GlobalState';
+import { PlusCircle, CheckCircle, MapPin, Loader2, Wifi, Layers, Settings, Activity, Smartphone, Bluetooth, RefreshCw } from 'lucide-react';
 
 export default function EnterpriseScanner() {
-  const [isScanning, setIsScanning] = useState(true);
-  const [scanResult, setScanResult] = useState(null);
+  const navigate = useNavigate();
+  const { updateTreeConfig } = useGlobalState();
+  const [pairingState, setPairingState] = useState('idle'); // idle, nfc, ble, sync, paired
+  const [treeName, setTreeName] = useState('Linden (Tilia)');
+  const [lat, setLat] = useState('49.0069');
+  const [lon, setLon] = useState('8.4038');
+  const [deveui, setDeveui] = useState('00-80-E1-15-2C-3A-4F-9E');
+  const [smartValve, setSmartValve] = useState(true);
+  const [frequency, setFrequency] = useState('1h');
+  const [submitted, setSubmitted] = useState(false);
 
-  const simulateScan = () => {
-    setIsScanning(false);
+  const startPairingSequence = () => {
+    setPairingState('nfc');
+    
+    // Step 1: NFC Wakeup -> BLE Connection after 1.2s
     setTimeout(() => {
-      setScanResult({
-        id: 884,
-        mac: "00:1B:44:11:3A:4C",
-        name: "Linden (Tilia)",
-        status: "Online",
-        battery: 12,
-        history: [
-          { date: "Oct 12, 2023", action: "Battery Replaced" },
-          { date: "Mar 04, 2023", action: "Firmware Updated v2.1" },
-          { date: "Nov 22, 2022", action: "Initial Installation" }
-        ]
-      });
-    }, 1500);
+      setPairingState('ble');
+      
+      // Step 2: BLE -> Data Sync after 1.2s
+      setTimeout(() => {
+        setPairingState('sync');
+        
+        // Step 3: Sync -> Paired Form autofilled after 1.0s
+        setTimeout(() => {
+          setPairingState('paired');
+        }, 1000);
+      }, 1200);
+    }, 1200);
   };
 
-  const resetScanner = () => {
-    setScanResult(null);
-    setIsScanning(true);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    updateTreeConfig(884, { pos: [parseFloat(lat), parseFloat(lon)], hasAutoValve: smartValve, battery: 100, deveui });
+    setSubmitted(true);
   };
+
+  const handleReset = () => {
+    setPairingState('idle');
+    setSubmitted(false);
+  };
+
+  // 1. Success Screen (Node registered)
+  if (submitted) {
+    return (
+      <div className="min-h-full bg-gray-bg p-6 flex flex-col justify-center items-center text-center animate-in fade-in duration-500">
+        <div className="w-20 h-20 bg-earthy-green/10 rounded-full flex items-center justify-center mb-6 shadow-sm border border-earthy-green/20">
+          <CheckCircle className="text-earthy-green" size={48} />
+        </div>
+        <h1 className="text-3xl font-black text-gray-900 leading-tight mb-2">Node Deployed!</h1>
+        <p className="text-gray-500 text-sm font-medium mb-8 max-w-xs">
+          The node has been paired, registered, and calibration data verified. Telemetry is streaming live.
+        </p>
+
+        <div className="w-full bg-white rounded-3xl p-5 border border-gray-100 shadow-xl space-y-3 mb-8 text-left">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Metadata Summary</p>
+          <div className="flex justify-between border-b border-gray-50 pb-2">
+            <span className="text-xs text-gray-400 font-bold uppercase">Asset Link</span>
+            <span className="text-xs text-gray-900 font-black">{treeName}</span>
+          </div>
+          <div className="flex justify-between border-b border-gray-50 pb-2">
+            <span className="text-xs text-gray-400 font-bold uppercase">DevEUI</span>
+            <span className="text-xs text-gray-900 font-mono font-black">{deveui}</span>
+          </div>
+          <div className="flex justify-between border-b border-gray-50 pb-2">
+            <span className="text-xs text-gray-400 font-bold uppercase">GPS coords</span>
+            <span className="text-xs text-gray-900 font-black">{lat}, {lon}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-xs text-gray-400 font-bold uppercase">Calibration Status</span>
+            <span className="text-xs text-earthy-green font-black">Pre-configured (OK)</span>
+          </div>
+        </div>
+
+        <div className="space-y-3 w-full">
+          <button 
+            onClick={() => navigate('/enterprise/routes')}
+            className="w-full py-4 bg-earthy-green hover:bg-green-600 text-white rounded-2xl font-black shadow-lg shadow-earthy-green/20 transition-transform active:scale-95 text-lg"
+          >
+            Show on Map
+          </button>
+          
+          <button 
+            onClick={handleReset}
+            className="w-full py-4 bg-white border border-gray-200 text-gray-700 rounded-2xl font-black shadow-sm transition-transform active:scale-95 text-lg hover:bg-gray-50"
+          >
+            Configure Another Node
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full bg-gray-900 flex flex-col relative overflow-hidden">
+    <div className="min-h-full bg-gray-bg p-6 pb-24 flex flex-col space-y-6">
       
-      <header className="p-6 pb-2 relative z-10">
-        <h1 className="text-2xl font-black tracking-tight text-white">Hardware Pairing</h1>
-        <p className="text-gray-400 mt-1 text-sm font-medium">Scan QR or tap NFC tag on the sensor housing.</p>
+      {/* Header */}
+      <header>
+        <h1 className="text-2xl font-black tracking-tight text-gray-900">Pair & Calibrate Node</h1>
+        <p className="text-gray-500 mt-1 text-sm font-medium">Link new IoT node hardware to city assets.</p>
       </header>
 
-      {isScanning && !scanResult ? (
-        <div className="flex-1 flex flex-col items-center justify-center relative z-10 px-6 pb-12">
-          {/* Mock Viewfinder */}
-          <div 
-            onClick={simulateScan}
-            className="w-64 h-64 border-2 border-white/20 rounded-3xl relative flex items-center justify-center cursor-pointer mb-8 shadow-[0_0_50px_rgba(255,255,255,0.05)] bg-white/5 backdrop-blur-sm"
+      {/* 2. Initial Scanning / Discovering Interface */}
+      {pairingState === 'idle' && (
+        <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-center flex flex-col items-center justify-center space-y-6 py-12 animate-in zoom-in-95">
+          <div className="w-24 h-24 bg-gray-900 rounded-full flex items-center justify-center shadow-lg relative">
+            <div className="absolute inset-0 bg-gray-900/10 rounded-full animate-ping" />
+            <Smartphone className="text-white" size={40} />
+          </div>
+          <div>
+            <h2 className="text-lg font-black text-gray-900">Search for Deployed Node</h2>
+            <p className="text-xs text-gray-500 font-medium mt-2 max-w-xs mx-auto leading-relaxed">
+              Activate your phone's NFC or Bluetooth and hold it near the sensor node housing to read hardware metadata.
+            </p>
+          </div>
+          
+          <button
+            onClick={startPairingSequence}
+            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 hover:bg-gray-800"
           >
-            {/* Viewfinder corners */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-blue-500 rounded-tl-2xl"></div>
-            <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-blue-500 rounded-tr-2xl"></div>
-            <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-blue-500 rounded-bl-2xl"></div>
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-blue-500 rounded-br-2xl"></div>
-            
-            <div className="relative">
-              <ScanLine size={48} className="text-blue-400 animate-pulse" />
-            </div>
-            
-            {/* Scanning line animation */}
-            <div className="absolute top-0 left-0 w-full h-1 bg-blue-500/50 shadow-[0_0_15px_#3b82f6] animate-[scan_2s_ease-in-out_infinite]" />
-          </div>
-
-          <div className="flex items-center space-x-6 text-gray-400">
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-2">
-                <ScanLine size={20} className="text-white" />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-widest">QR Code</span>
-            </div>
-            <div className="w-px h-8 bg-white/10"></div>
-            <div className="flex flex-col items-center">
-              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-2">
-                <SmartphoneNfc size={20} className="text-white" />
-              </div>
-              <span className="text-xs font-bold uppercase tracking-widest">NFC Tap</span>
-            </div>
-          </div>
-          
-          <p className="text-center text-xs text-gray-500 font-bold mt-8 uppercase tracking-widest">
-            Tap viewfinder to simulate scan
-          </p>
-        </div>
-      ) : scanResult ? (
-        <div className="flex-1 bg-gray-bg rounded-t-[40px] p-6 animate-in slide-in-from-bottom-8 flex flex-col mt-4">
-          
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mr-4">
-                <CheckCircle className="text-blue-600" size={24} />
-              </div>
-              <div>
-                <h2 className="text-xl font-black text-gray-900">Tag Detected</h2>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest font-mono mt-0.5">{scanResult.mac}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mb-6">
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Assigned Asset</p>
-                <p className="font-black text-gray-900 text-lg">{scanResult.name} <span className="text-gray-400 text-sm font-bold">#{scanResult.id}</span></p>
-              </div>
-              <div className="bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 flex flex-col items-center justify-center">
-                <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">Battery</p>
-                <p className="font-black text-red-600 leading-none mt-0.5">{scanResult.battery}%</p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Maintenance History</p>
-              <div className="space-y-4 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-                {scanResult.history.map((item, idx) => (
-                  <div key={idx} className="relative flex items-center">
-                    <div className="w-5 h-5 rounded-full bg-white border-4 border-gray-200 flex items-center justify-center shrink-0 z-10" />
-                    <div className="ml-4 flex-1">
-                      <p className="font-bold text-gray-900 text-sm">{item.action}</p>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center mt-0.5">
-                        <Clock size={10} className="mr-1" /> {item.date}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3 mt-auto pb-6">
-            <button 
-              onClick={() => {
-                alert("Pairing workflow initiated. Follow instructions to register new MAC address.");
-              }}
-              className="w-full bg-gray-900 hover:bg-gray-800 text-white font-black py-4 rounded-2xl shadow-lg transition-colors flex items-center justify-center active:scale-95"
-            >
-              <RefreshCw size={18} className="mr-2" /> Replace Sensor Unit
-            </button>
-            <button 
-              onClick={resetScanner}
-              className="w-full bg-white border border-gray-200 text-gray-600 font-bold py-4 rounded-2xl shadow-sm transition-colors flex items-center justify-center active:scale-95"
-            >
-              Scan Another Tag
-            </button>
-          </div>
-
-        </div>
-      ) : (
-        <div className="flex-1 flex items-center justify-center">
-           <RefreshCw className="text-white animate-spin" size={32} />
+            <Bluetooth size={18} className="animate-pulse" />
+            Initiate NFC/BLE Pair
+          </button>
         </div>
       )}
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes scan {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(256px); }
-          100% { transform: translateY(0); }
-        }
-      `}} />
+
+      {/* 3. Simulated Connection Progress Sequence */}
+      {(pairingState === 'nfc' || pairingState === 'ble' || pairingState === 'sync') && (
+        <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100 text-center flex flex-col items-center justify-center space-y-6 py-12 animate-in zoom-in-95">
+          
+          {pairingState === 'nfc' && (
+            <>
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center shadow-sm border border-gray-100 relative">
+                <div className="absolute inset-0 bg-gray-950/5 rounded-full animate-ping" />
+                <Smartphone className="text-gray-900 animate-bounce" size={32} />
+              </div>
+              <div>
+                <h3 className="font-black text-gray-900">NFC Handshake</h3>
+                <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed max-w-xs mx-auto">
+                  Hold phone near device tag to transmit bootstrap network identifiers...
+                </p>
+              </div>
+            </>
+          )}
+
+          {pairingState === 'ble' && (
+            <>
+              <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center shadow-sm border border-blue-100 relative">
+                <div className="absolute inset-0 bg-blue-500/10 rounded-full animate-ping" />
+                <Bluetooth className="text-blue-500 animate-pulse" size={32} />
+              </div>
+              <div>
+                <h3 className="font-black text-gray-900">Connecting via BLE</h3>
+                <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed max-w-xs mx-auto">
+                  Bluetooth authentication key accepted. Opening diagnostic channel...
+                </p>
+              </div>
+            </>
+          )}
+
+          {pairingState === 'sync' && (
+            <>
+              <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center shadow-sm border border-amber-100">
+                <RefreshCw className="text-amber-500 animate-spin" size={32} />
+              </div>
+              <div>
+                <h3 className="font-black text-gray-900">Syncing Diagnostics</h3>
+                <p className="text-xs text-gray-500 font-medium mt-1 leading-relaxed max-w-xs mx-auto">
+                  Downloading DevEUI, pre-loaded calibration baselines, and GPS position...
+                </p>
+              </div>
+            </>
+          )}
+
+          <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden mt-4">
+            <div className={`h-full rounded-full transition-all bg-gray-900 ${
+              pairingState === 'nfc' ? 'w-1/3' :
+              pairingState === 'ble' ? 'w-2/3' : 'w-[90%]'
+            }`} />
+          </div>
+        </div>
+      )}
+
+      {/* 4. Autofilled Configuration Form (Detected State) */}
+      {pairingState === 'paired' && (
+        <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 space-y-6 animate-in slide-in-from-bottom-8">
+          
+          <div className="bg-green-50/50 border border-green-100 p-4 rounded-2xl flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+              <CheckCircle className="text-earthy-green" size={18} />
+            </div>
+            <div>
+              <p className="text-xs font-black text-earthy-green">Node Diagnostics Verified</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">Device settings pre-loaded successfully via BLE</p>
+            </div>
+          </div>
+
+          {/* Section 1: Asset Link */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
+              <Layers size={16} className="text-gray-400" />
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Asset Link</h2>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-700 uppercase tracking-wider block">Target Tree</label>
+              <select 
+                value={treeName}
+                onChange={(e) => setTreeName(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-earthy-green font-bold text-gray-800 shadow-sm"
+              >
+                <option value="Linden (Tilia)">Linden (Tilia) · ID #884</option>
+                <option value="Maple (Acer)">Maple (Acer) · ID #842</option>
+                <option value="Oak (Quercus)">Oak (Quercus) · ID #812</option>
+                <option value="Beech (Fagus)">Beech (Fagus) · ID #798</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Section 2: Location settings (Autofilled via GPS) */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
+              <MapPin size={16} className="text-gray-400" />
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Location (Autofilled)</h2>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-wider block">Latitude</label>
+                <input 
+                  type="text" 
+                  value={lat}
+                  onChange={(e) => setLat(e.target.value)}
+                  required
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-earthy-green font-bold text-gray-800 shadow-sm cursor-not-allowed"
+                  disabled
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-black text-gray-400 uppercase tracking-wider block">Longitude</label>
+                <input 
+                  type="text" 
+                  value={lon}
+                  onChange={(e) => setLon(e.target.value)}
+                  required
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-earthy-green font-bold text-gray-800 shadow-sm cursor-not-allowed"
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Hardware Settings */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
+              <Settings size={16} className="text-gray-400" />
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">LoRaWAN Settings</h2>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-700 uppercase tracking-wider block">Device DevEUI</label>
+              <input 
+                type="text"
+                value={deveui}
+                onChange={(e) => setDeveui(e.target.value)}
+                required
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-earthy-green font-mono font-bold text-gray-800 shadow-sm"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-700 uppercase tracking-wider block">Transmission Frequency</label>
+              <select 
+                value={frequency}
+                onChange={(e) => setFrequency(e.target.value)}
+                className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-earthy-green font-bold text-gray-800 shadow-sm"
+              >
+                <option value="15m">Every 15 min (Real-time Calibration)</option>
+                <option value="1h">Hourly (Optimized Battery Life)</option>
+                <option value="6h">Every 6 hours (Max Eco Mode)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Section 4: Pre-configured Calibration Notice */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
+              <Activity size={16} className="text-gray-400" />
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Soil Calibration</h2>
+            </div>
+            
+            <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex flex-col space-y-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500 font-bold uppercase tracking-wider">Calibration Status</span>
+                <span className="text-blue-600 font-black">Pre-configured (Lab)</span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-blue-100/50">
+                <span className="text-gray-500 font-bold uppercase tracking-wider">Dry Base (0% RF)</span>
+                <span className="text-gray-800 font-mono font-black">120 Hz</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-500 font-bold uppercase tracking-wider">Wet Base (100% RF)</span>
+                <span className="text-gray-800 font-mono font-black">450 Hz</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 5: Smart Valve Toggle */}
+          <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+            <div>
+              <h3 className="font-bold text-gray-900 text-sm">Automated Smart Valve</h3>
+              <p className="text-[10px] text-gray-400 font-medium">Enable remote triggers for water delivery</p>
+            </div>
+            <input 
+              type="checkbox"
+              checked={smartValve}
+              onChange={(e) => setSmartValve(e.target.checked)}
+              className="w-10 h-6 bg-gray-200 rounded-full cursor-pointer focus:outline-none accent-earthy-green"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-black text-lg transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2 hover:bg-gray-800"
+          >
+            <PlusCircle size={20} />
+            Register Deployed Node
+          </button>
+        </form>
+      )}
     </div>
   );
 }

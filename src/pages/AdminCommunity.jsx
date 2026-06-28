@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useGlobalState } from '../context/GlobalState';
 import { Trophy, AlertCircle, Megaphone, CheckCircle, Clock } from 'lucide-react';
 
 export default function AdminCommunity() {
+  const { tickets } = useGlobalState();
   const [pushTitle, setPushTitle] = useState("Heatwave Alert! 🌡️");
   const [pushBody, setPushBody] = useState("Temperatures are spiking this weekend. Trees in the Downtown sector need extra water!");
 
@@ -13,11 +15,15 @@ export default function AdminCommunity() {
     { rank: 5, name: "Julia B.", points: 760, liters: 210, badges: 3 }
   ];
 
-  const issueReports = [
-    { id: 1042, user: "Max W.", type: "Vandalism", desc: "Sensor casing broken on Oak tree #412.", status: "Pending", time: "2 hours ago" },
-    { id: 1043, user: "Anonymous", type: "Tree Health", desc: "Large branch snapped off Linden tree #882.", status: "In Progress", time: "5 hours ago" },
-    { id: 1044, user: "Sarah L.", type: "Water Source", desc: "Public tap near park entrance is leaking.", status: "Resolved", time: "1 day ago" }
-  ];
+  // Map global tickets to UI format dynamically
+  const issueReports = tickets.map(t => ({
+    id: t.id,
+    user: "Citizen Volunteer",
+    type: t.issue,
+    desc: `Problem reported on city canopy asset: ${t.treeName}. Requires municipal review.`,
+    status: t.status === "Open" ? "Pending" : "Resolved",
+    time: t.date
+  }));
 
   return (
     <div className="space-y-6 flex flex-col h-full">
@@ -32,7 +38,7 @@ export default function AdminCommunity() {
         <div className="col-span-8 flex flex-col space-y-6 min-h-0">
           
           {/* Volunteer Leaderboard */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col flex-1 min-h-0">
             <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
               <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
                 <Trophy className="text-amber-500" size={16} />
@@ -82,7 +88,7 @@ export default function AdminCommunity() {
           </div>
 
           {/* Issue Reports */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col flex-1 min-h-0">
             <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
               <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
                 <AlertCircle className="text-red-500" size={16} />

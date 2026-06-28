@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { Navigation, Droplet, Battery, MapPin, CheckCircle, Droplets, Map as MapIcon, ChevronRight } from 'lucide-react';
 import DeckGL from '@deck.gl/react';
 import { PathLayer, ScatterplotLayer } from '@deck.gl/layers';
 import Map from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { useGlobalState } from '../context/GlobalState';
 
 const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
@@ -15,31 +16,14 @@ const WATER_SOURCES = [
 ];
 
 export default function EnterpriseRoutes() {
-  const [routeStops, setRouteStops] = useState([]);
-  const [completedStops, setCompletedStops] = useState([]);
+  const { driverStops: routeStops, completedStops, completeStop } = useGlobalState();
   const [selectedStop, setSelectedStop] = useState(null);
   const [showHydrants, setShowHydrants] = useState(false);
   const [viewState, setViewState] = useState({
-    longitude: 8.4037, latitude: 49.0069, zoom: 14, pitch: 45, bearing: 0
+    longitude: routeStops.length > 0 ? routeStops[0].pos[1] : 8.4037, 
+    latitude: routeStops.length > 0 ? routeStops[0].pos[0] : 49.0069, 
+    zoom: 14, pitch: 45, bearing: 0
   });
-
-  useEffect(() => {
-    const savedRoute = localStorage.getItem('activeDriverRoute');
-    if (savedRoute) {
-      const parsed = JSON.parse(savedRoute);
-      setRouteStops(parsed);
-      if (parsed.length > 0) {
-        setViewState(v => ({ ...v, longitude: parsed[0].pos[1], latitude: parsed[0].pos[0] }));
-      }
-    }
-    const savedCompleted = localStorage.getItem('driverCompletedStops');
-    if (savedCompleted) setCompletedStops(JSON.parse(savedCompleted));
-  }, []);
-
-  // Update local storage when completed stops change
-  useEffect(() => {
-    localStorage.setItem('driverCompletedStops', JSON.stringify(completedStops));
-  }, [completedStops]);
 
   const activeStops = useMemo(() => {
     return routeStops.filter(tree => !completedStops.includes(tree.id));
@@ -62,7 +46,7 @@ export default function EnterpriseRoutes() {
     
     // Simulate IoT Sync Delay
     setTimeout(() => {
-      setCompletedStops(prev => [...prev, selectedStop.id]);
+      completeStop(selectedStop.id);
       setSelectedStop(null);
       
       // Zoom back out to route overview
@@ -93,10 +77,10 @@ export default function EnterpriseRoutes() {
   const layers = [
     new PathLayer({
       id: 'route-path',
-      data: [{
+      data: activeStops.length > 1 ? [{
         path: activeStops.map(t => [t.pos[1], t.pos[0]]),
         color: [34, 197, 94] // earthy-green
-      }],
+      }] : [],
       getPath: d => d.path,
       getColor: d => d.color,
       getWidth: 6,
@@ -106,11 +90,12 @@ export default function EnterpriseRoutes() {
       id: 'route-stops',
       data: activeStops,
       getPosition: d => [d.pos[1], d.pos[0]],
-      getFillColor: d => selectedStop && d.id === selectedStop.id ? [59, 130, 246] : [255, 255, 255],
+      getFillColor: d => selectedStop && d.id === selectedStop.id ? [59, 130, 246, 255] : [255, 255, 255, 255],
       getRadius: d => selectedStop && d.id === selectedStop.id ? 20 : 15,
       radiusMinPixels: 6,
+      stroked: true,
       lineWidthMinPixels: 3,
-      getLineColor: [0, 0, 0],
+      getLineColor: [34, 197, 94, 255], // Green border to match the path
       pickable: true,
       onClick: ({object}) => object && handleStopSelect(object)
     }),

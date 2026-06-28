@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { GlobalProvider } from './context/GlobalState';
 import clsx from 'clsx';
-import Auth from './pages/Auth';
 import Gateway from './pages/Gateway';
 
 // Citizen Flow
@@ -8,7 +8,7 @@ import CitizenLayout from './components/CitizenLayout';
 import CitizenMap from './pages/CitizenMap';
 import CitizenProfile from './pages/CitizenProfile';
 import CitizenLeaderboard from './pages/CitizenLeaderboard';
-import CitizenReport from './pages/CitizenReport';
+import CitizenRewards from './pages/CitizenRewards';
 
 // Enterprise Flow
 import EnterpriseLayout from './components/EnterpriseLayout';
@@ -32,26 +32,26 @@ import HomeownerDashboard from './pages/HomeownerDashboard';
 function AppLayout() {
   const location = useLocation();
   const isDesktopAdmin = location.pathname.startsWith('/admin');
+  const isLandingPage = location.pathname === '/';
 
   return (
     <div className={clsx(
       "relative overflow-hidden bg-gray-bg",
-      isDesktopAdmin 
+      (isDesktopAdmin || isLandingPage)
         ? "flex h-screen w-full" 
         : "flex flex-col h-screen w-full max-w-md mx-auto shadow-xl"
     )}>
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto">
         <Routes>
-          <Route path="/" element={<Auth />} />
-          <Route path="/gateway" element={<Gateway />} />
+          <Route path="/" element={<Gateway />} />
           
           {/* Citizen Dedicated Flow */}
           <Route path="/citizen" element={<CitizenLayout />}>
             <Route index element={<Navigate to="map" replace />} />
             <Route path="map" element={<CitizenMap />} />
             <Route path="leaderboard" element={<CitizenLeaderboard />} />
-            <Route path="report" element={<CitizenReport />} />
+            <Route path="rewards" element={<CitizenRewards />} />
             <Route path="profile" element={<CitizenProfile />} />
           </Route>
 
@@ -84,11 +84,13 @@ function AppLayout() {
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-200 flex items-center justify-center">
-        <AppLayout />
-      </div>
-    </Router>
+    <GlobalProvider>
+      <Router>
+        <div className="min-h-screen flex items-center justify-center bg-gray-bg">
+          <AppLayout />
+        </div>
+      </Router>
+    </GlobalProvider>
   );
 }
 

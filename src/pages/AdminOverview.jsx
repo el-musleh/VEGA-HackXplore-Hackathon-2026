@@ -31,7 +31,7 @@ export default function AdminOverview() {
 
       {/* Top Stats Row */}
       <div className="grid grid-cols-4 gap-6">
-        <div className="bg-white border border-red-100 rounded-2xl p-6 shadow-sm shadow-red-100 relative overflow-hidden">
+        <div className="bg-white border border-red-100 rounded-3xl p-6 shadow-xl shadow-red-100 relative overflow-hidden">
           <div className="absolute -right-4 -top-4 opacity-5">
             <AlertTriangle size={100} />
           </div>
@@ -45,7 +45,7 @@ export default function AdminOverview() {
           <p className="text-sm text-gray-500 font-medium mt-1 relative z-10">Critical Trees & Offline Sensors</p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl relative overflow-hidden">
           <div className="absolute -right-4 -top-4 opacity-5">
             <Truck size={100} />
           </div>
@@ -58,11 +58,11 @@ export default function AdminOverview() {
           <p className="text-3xl font-black text-gray-900 relative z-10">{activeDrivers} <span className="text-lg text-gray-400">/ {totalDrivers}</span></p>
           <div className="flex items-center justify-between mt-1 relative z-10">
             <p className="text-sm text-gray-500 font-medium">Active Drivers</p>
-            <span className="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-md">{taskCompletion}% Done</span>
+            <span className="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded-full">{taskCompletion}% Done</span>
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl relative overflow-hidden">
           <div className="absolute -right-4 -top-4 opacity-5">
             <Users size={100} />
           </div>
@@ -76,7 +76,7 @@ export default function AdminOverview() {
           <p className="text-sm text-gray-500 font-medium mt-1 relative z-10">Watered by Volunteers (This Week)</p>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl relative overflow-hidden">
           <div className="absolute -right-4 -top-4 opacity-5">
             <Activity size={100} />
           </div>
@@ -93,7 +93,7 @@ export default function AdminOverview() {
 
       <div className="grid grid-cols-3 gap-6">
         {/* System Health Pie Chart */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col col-span-1">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl flex flex-col col-span-1">
           <h2 className="text-lg font-black text-gray-900 mb-2">System Health</h2>
           <p className="text-sm text-gray-500 font-medium mb-6">IoT Sensor connection status</p>
           
@@ -142,7 +142,7 @@ export default function AdminOverview() {
         </div>
 
         {/* Quick Actions / Recent Alerts */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col col-span-2">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl flex flex-col col-span-2">
           <h2 className="text-lg font-black text-gray-900 mb-6">Recent Critical Alerts</h2>
           
           <div className="space-y-4 flex-1">
