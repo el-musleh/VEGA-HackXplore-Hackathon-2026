@@ -6,7 +6,7 @@
 ## Step 0: Verify Scaffolding Result
 
 - [ ] `new-project.sh` completed without errors
-- [x] All placeholders replaced (Vegas La Vega, IoTrees description, React.js/ESP32/Python stack, 2026)
+- [x] All placeholders replaced (Vegas La Vega description, React.js/ESP32/Python stack, 2026)
 - [ ] `.gitkeep` files cleaned up (done automatically by `new-project.sh`)
 - [ ] `git init` succeeded
 

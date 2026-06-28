@@ -1,4 +1,4 @@
-# IoTrees System Architecture
+# Vegas La Vega System Architecture
 
 ## Overview Diagram
 

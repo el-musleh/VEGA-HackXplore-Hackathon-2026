@@ -5,7 +5,7 @@
 ## Project Identity
 
 - **Name**: Vegas La Vega
-- **Description**: IoTrees — Smart Watering for Urban Trees. Ground-truth sensors + citizen gamification + city routing engine for Karlsruhe's urban canopy.
+- **Description**: Vegas La Vega — Smart Watering for Urban Trees. Ground-truth sensors + citizen gamification + city routing engine for Karlsruhe's urban canopy.
 - **Tech Stack**: React.js, ESP32/Arduino, Python (Flask/SQLite optional backend)
 
 ## Quick Reference
