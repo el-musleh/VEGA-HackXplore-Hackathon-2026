@@ -26,7 +26,7 @@ export default function Gateway() {
           <div className="w-24 h-24 rounded-full bg-earthy-green/10 flex items-center justify-center group-hover:bg-earthy-green/20 transition-colors mb-6">
             <Map className="text-earthy-green" size={48} />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 group-hover:text-earthy-green transition-colors mb-3">Citizen App</h2>
+          <h2 className="text-2xl font-bold text-gray-900 group-hover:text-earthy-green transition-colors mb-3">Citizen Volunteer App</h2>
           <p className="text-gray-500 leading-relaxed">
             Gamified mobile app for citizens to explore thirsty trees, track impact, and join the watering network.
           </p>
@@ -40,7 +40,7 @@ export default function Gateway() {
           <div className="w-24 h-24 rounded-full bg-water-drop-blue/10 flex items-center justify-center group-hover:bg-water-drop-blue/20 transition-colors mb-6">
             <Sprout className="text-water-drop-blue" size={48} />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 group-hover:text-water-drop-blue transition-colors mb-3">Driver App</h2>
+          <h2 className="text-2xl font-bold text-gray-900 group-hover:text-water-drop-blue transition-colors mb-3">Field Technician App</h2>
           <p className="text-gray-500 leading-relaxed">
             Mobile routing tool for city field-workers to sync sensors and navigate optimized watering routes.
           </p>
@@ -54,7 +54,7 @@ export default function Gateway() {
           <div className="w-24 h-24 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors mb-6">
             <Briefcase className="text-white" size={48} />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Gov Portal</h2>
+          <h2 className="text-2xl font-bold text-white mb-3">City Operations Portal</h2>
           <p className="text-gray-400 leading-relaxed">
             Full-screen Desktop Command Center for city officials to analyze sensor telemetry and fleet metrics.
           </p>

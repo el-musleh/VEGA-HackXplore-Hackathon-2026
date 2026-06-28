@@ -7,6 +7,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { trees } = useGlobalState();
+  const isMapPage = location.pathname === '/admin/map';
 
   const navItems = [
     { to: '/admin/overview', icon: LayoutDashboard, label: 'Overview' },
@@ -29,8 +30,8 @@ export default function AdminLayout() {
             <Trees className="text-white" size={20} />
           </div>
           <div>
-            <h1 className="font-black text-gray-900 text-lg tracking-tight leading-none">EcoGuardian</h1>
-            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Admin Portal</p>
+            <h1 className="font-black text-gray-900 text-lg tracking-tight leading-none">City Operations Portal</h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1">Karlsruhe</p>
           </div>
         </div>
 
@@ -62,7 +63,7 @@ export default function AdminLayout() {
             <Settings size={18} className="mr-3 text-gray-400" /> Settings
           </button>
           <button 
-            onClick={() => navigate('/gateway')}
+            onClick={() => navigate('/')}
             className="flex items-center text-sm font-bold text-red-500 hover:text-red-700 w-full px-2 transition-colors"
           >
             <LogOut size={18} className="mr-3 text-red-400" /> Exit Desktop Portal
@@ -71,10 +72,17 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto bg-gray-50/50 p-10">
-        <div className="max-w-7xl mx-auto">
+      <main className={clsx(
+        "flex-1 overflow-hidden bg-gray-50/50",
+        isMapPage ? "flex flex-col" : "overflow-y-auto p-10"
+      )}>
+        {isMapPage ? (
           <Outlet context={{ trees }} />
-        </div>
+        ) : (
+          <div className="max-w-7xl mx-auto">
+            <Outlet context={{ trees }} />
+          </div>
+        )}
       </main>
 
     </div>

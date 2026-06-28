@@ -80,7 +80,7 @@ export default function AdminHardware() {
         </div>
       </div>
 
-      <div className="flex-1 bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col overflow-hidden min-h-0">
+      <div className="flex-1 bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col overflow-hidden min-h-0">
         <div className="p-6 border-b border-gray-100 bg-gray-50 flex items-center justify-between shrink-0">
           <h2 className="font-black text-gray-900 text-lg">
             {activeTab === 'inventory' && 'Full Deployment Roster'}
@@ -113,15 +113,15 @@ export default function AdminHardware() {
                   <td className="py-4 text-sm text-gray-500">{sensor.installed}</td>
                   <td className="py-4">
                     {activeTab === 'calibration' ? (
-                      <span className="flex items-center text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-md w-max">
+                      <span className="flex items-center text-xs font-bold text-red-600 bg-red-50 px-2 py-1 rounded-full w-max">
                         <AlertTriangle size={12} className="mr-1" /> Flatlined at 100%
                       </span>
                     ) : activeTab === 'battery' || sensor.battery < 15 ? (
-                      <span className="flex items-center text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-md w-max">
+                      <span className="flex items-center text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full w-max">
                         <Zap size={12} className="mr-1" /> {sensor.battery}% Left
                       </span>
                     ) : (
-                      <span className="flex items-center text-xs font-bold text-earthy-green bg-earthy-green/10 px-2 py-1 rounded-md w-max">
+                      <span className="flex items-center text-xs font-bold text-earthy-green bg-earthy-green/10 px-2 py-1 rounded-full w-max">
                         <Wifi size={12} className="mr-1" /> Online
                       </span>
                     )}

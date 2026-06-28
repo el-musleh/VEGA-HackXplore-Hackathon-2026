@@ -32,7 +32,7 @@ export default function AdminCommunity() {
         <div className="col-span-8 flex flex-col space-y-6 min-h-0">
           
           {/* Volunteer Leaderboard */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col flex-1 min-h-0">
             <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
               <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
                 <Trophy className="text-amber-500" size={16} />
@@ -82,7 +82,7 @@ export default function AdminCommunity() {
           </div>
 
           {/* Issue Reports */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl flex flex-col flex-1 min-h-0">
             <div className="p-5 border-b border-gray-100 bg-gray-50 flex items-center">
               <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
                 <AlertCircle className="text-red-500" size={16} />

@@ -49,7 +49,7 @@ export default function AdminAnalytics() {
 
       {/* Top Stat Cards */}
       <div className="grid grid-cols-3 gap-6 shrink-0">
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm flex items-center">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl flex items-center">
           <div className="w-12 h-12 bg-water-drop-blue/10 rounded-2xl flex items-center justify-center mr-4">
             <Droplets className="text-water-drop-blue" size={24} />
           </div>
@@ -59,7 +59,7 @@ export default function AdminAnalytics() {
           </div>
         </div>
         
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm flex items-center">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl flex items-center">
           <div className="w-12 h-12 bg-earthy-green/10 rounded-2xl flex items-center justify-center mr-4">
             <Banknote className="text-earthy-green" size={24} />
           </div>
@@ -69,7 +69,7 @@ export default function AdminAnalytics() {
           </div>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm flex items-center">
+        <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-xl flex items-center">
           <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center mr-4">
             <TrendingUp className="text-orange-500" size={24} />
           </div>
@@ -83,7 +83,7 @@ export default function AdminAnalytics() {
       <div className="flex-1 grid grid-cols-2 gap-6 min-h-0">
         
         {/* Water Usage Chart */}
-        <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col min-h-0">
+        <div className="bg-white border border-gray-100 rounded-3xl shadow-xl p-6 flex flex-col min-h-0">
           <h2 className="text-lg font-black text-gray-900 mb-1">Watering Volume: City vs. Citizens</h2>
           <p className="text-sm text-gray-500 mb-6">Comparison of water dispatched via city trucks vs. volunteer efforts (Liters).</p>
           
@@ -108,7 +108,7 @@ export default function AdminAnalytics() {
         <div className="flex flex-col space-y-6 min-h-0">
           
           {/* Cost Savings */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl p-6 flex flex-col flex-1 min-h-0">
             <h2 className="text-lg font-black text-gray-900 mb-1">Financial Offset</h2>
             <p className="text-sm text-gray-500 mb-4">Money saved from reduced truck dispatches (€).</p>
             
@@ -132,7 +132,7 @@ export default function AdminAnalytics() {
           </div>
 
           {/* Tree Health Trends (Heat Islands) */}
-          <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-6 flex flex-col flex-1 min-h-0">
+          <div className="bg-white border border-gray-100 rounded-3xl shadow-xl p-6 flex flex-col flex-1 min-h-0">
             <h2 className="text-lg font-black text-gray-900 mb-1">Heat Island Stress Index</h2>
             <p className="text-sm text-gray-500 mb-4">Average moisture % dropping across key districts.</p>
             

@@ -8,7 +8,7 @@ import CitizenLayout from './components/CitizenLayout';
 import CitizenMap from './pages/CitizenMap';
 import CitizenProfile from './pages/CitizenProfile';
 import CitizenLeaderboard from './pages/CitizenLeaderboard';
-import CitizenReport from './pages/CitizenReport';
+import CitizenRewards from './pages/CitizenRewards';
 
 // Enterprise Flow
 import EnterpriseLayout from './components/EnterpriseLayout';
@@ -51,7 +51,7 @@ function AppLayout() {
             <Route index element={<Navigate to="map" replace />} />
             <Route path="map" element={<CitizenMap />} />
             <Route path="leaderboard" element={<CitizenLeaderboard />} />
-            <Route path="report" element={<CitizenReport />} />
+            <Route path="rewards" element={<CitizenRewards />} />
             <Route path="profile" element={<CitizenProfile />} />
           </Route>
 

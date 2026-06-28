@@ -1,8 +1,33 @@
+import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Droplet, Wind, ShieldCheck, Sun, Star, TreePine, Thermometer } from 'lucide-react';
+import { Droplet, Wind, ShieldCheck, Sun, Star, TreePine, Thermometer, Camera, AlertTriangle, Sprout, Hammer, Trash, Send, CheckCircle, X } from 'lucide-react';
 
 export default function CitizenProfile() {
   const { ecoPoints } = useOutletContext();
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [hasPhoto, setHasPhoto] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const issueTypes = [
+    { id: 'sick', icon: Sprout, label: "Tree Looks Sick" },
+    { id: 'broken', icon: AlertTriangle, label: "Broken Branches" },
+    { id: 'trash', icon: Trash, label: "Trash Dumped" },
+    { id: 'sensor', icon: Hammer, label: "Sensor Smashed" }
+  ];
+
+  const handleCameraClick = () => {
+    setHasPhoto(true);
+  };
+
+  const handleSubmit = () => {
+    if (!selectedIssue) return;
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setSelectedIssue(null);
+      setHasPhoto(false);
+    }, 4000);
+  };
   
   // Mock impact data based on points
   const litersDonated = Math.floor(ecoPoints / 2.5); // Metric conversion
@@ -110,6 +135,89 @@ export default function CitizenProfile() {
                 <span className="text-[10px] font-bold text-gray-400">85% Health</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Civic Eyes - Report an Issue (Merged Content) */}
+        <div className="pt-4">
+          <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Report a Problem (Civic Eyes)</h2>
+          
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+            {submitted ? (
+              <div className="py-6 flex flex-col items-center justify-center text-center animate-in fade-in duration-300">
+                <CheckCircle size={48} className="text-earthy-green mb-4 animate-bounce" />
+                <h3 className="text-lg font-black text-gray-900">Report Submitted!</h3>
+                <p className="text-xs text-gray-500 mt-2">Thank you! City operations has been alerted and will dispatch help soon.</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-xs font-medium text-gray-500 mb-3">Notice something wrong with a city tree or sensor? Let us know:</p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    {issueTypes.map((type) => (
+                      <button 
+                        key={type.id}
+                        type="button"
+                        onClick={() => setSelectedIssue(type.label)}
+                        className={`p-3 rounded-2xl border-2 flex items-center gap-2.5 text-left transition-all ${
+                          selectedIssue === type.label 
+                            ? 'border-gray-900 bg-gray-50' 
+                            : 'border-gray-100 bg-white hover:border-gray-200'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          selectedIssue === type.label ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-500'
+                        }`}>
+                          <type.icon size={14} />
+                        </div>
+                        <span className="font-bold text-gray-900 text-xs leading-tight">{type.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedIssue && (
+                  <div className="animate-in slide-in-from-bottom-2 space-y-4 pt-2 border-t border-gray-100">
+                    <div>
+                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Evidence Photo</p>
+                      {hasPhoto ? (
+                        <div className="relative h-28 bg-gray-900 rounded-xl overflow-hidden flex items-center justify-center">
+                          <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1596767554902-1811eef2a912?auto=format&fit=crop&q=80')] bg-cover bg-center" />
+                          <button 
+                            type="button"
+                            onClick={() => setHasPhoto(false)}
+                            className="absolute top-2 right-2 bg-black/50 p-1.5 rounded-full text-white hover:bg-black/70 backdrop-blur-md z-20"
+                          >
+                            <X size={12} />
+                          </button>
+                          <p className="absolute bottom-2 left-3 text-white text-[9px] font-bold tracking-widest uppercase z-10">
+                            Evidence_Snapshot.jpg
+                          </p>
+                        </div>
+                      ) : (
+                        <button 
+                          type="button"
+                          onClick={handleCameraClick}
+                          className="w-full h-28 border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                        >
+                          <Camera size={18} className="text-gray-400 mb-1" />
+                          <span className="font-bold text-gray-900 text-xs">Snap Photo</span>
+                        </button>
+                      )}
+                    </div>
+
+                    <button 
+                      type="button"
+                      onClick={handleSubmit}
+                      className="w-full py-3 rounded-xl font-bold text-sm bg-gray-900 text-white shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2"
+                    >
+                      <Send size={14} />
+                      Submit Report
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
